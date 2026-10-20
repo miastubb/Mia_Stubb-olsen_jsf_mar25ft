@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { getProductById } from "@/services/products";
 import Image from "next/image";
+import ReviewCarousel from "@/components/ReviewCarousel";
 
 interface ProductPageProps {
   params: Promise<{ id: string }>;
@@ -75,39 +76,18 @@ async function ProductDetails({ params }: ProductPageProps) {
                   </span>
                 </>
               )}
-              <section aria-labelledby="reviews-heading" className="mt-12">
-                <h2 id="reviews-heading" className="text-2xl font-bold">
-                  Customer reviews
-                </h2>
-
-                {product.reviews.length > 0 ? (
-                  <div className="mt-6 grid gap-4 md:grid-cols-2">
-                    {product.reviews.map((review) => (
-                      <article
-                        key={review.id}
-                        className="rounded-lg bg-zinc-900 p-5 text-zinc-100"
-                      >
-                        <h3 className="font-semibold">{review.username}</h3>
-                        <p className="mt-2 text-sm">
-                          <span aria-hidden="true" className="text-amber-400">
-                            ★
-                          </span>{" "}
-                          {review.rating.toFixed(1)} / 5
-                        </p>
-                        <p className="mt-3 text-sm leading-relaxed">
-                          {review.description}
-                        </p>
-                      </article>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="mt-4">No customer reviews yet.</p>
-                )}
-              </section>
             </div>
           </div>
         </div>
       </div>
+      
+      <section aria-labelledby="reviews-heading" className="mt-12">
+        <h2 id="reviews-heading" className="text-2xl font-bold">
+          Customer reviews
+        </h2>
+
+        <ReviewCarousel reviews={product.reviews} />
+      </section>
     </main>
   );
 }

@@ -16,7 +16,7 @@ export default function ProductCard({ product }: ProductCardProps) {
     : 0;
 
   return (
-    <article className="overflow-hidden rounded-lg border">
+    <article className="overflow-hidden rounded-lg border border-zinc-700 bg-zinc-900 text-zinc-100">
       <Link href={`/products/${product.id}`}>
         <div className="relative">
           <Image

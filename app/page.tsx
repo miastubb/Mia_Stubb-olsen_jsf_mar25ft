@@ -10,7 +10,7 @@ async function Products() {
 
 export default function HomePage() {
   return (
-    <main className="flex-1 px-4 py-8 sm:px-6 lg:px-8">
+    <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8 sm:px-6 lg:px-8">
       <h1 className="mb-6 text-3xl font-bold">Welcome to our online store!</h1>
 
       <Suspense fallback={<p>Loading products...</p>}>

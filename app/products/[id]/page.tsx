@@ -10,6 +10,15 @@ async function ProductDetails({ params }: ProductPageProps) {
   const { id } = await params;
   const product = await getProductById(id);
 
+  const hasDiscount =
+    product.price > 0 && product.discountedPrice < product.price;
+
+  const discountPercentage = hasDiscount
+    ? Math.round(
+        ((product.price - product.discountedPrice) / product.price) * 100,
+      )
+    : 0;
+
   return (
     <main className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <div className="grid gap-8 md:grid-cols-2">
@@ -25,7 +34,78 @@ async function ProductDetails({ params }: ProductPageProps) {
 
         <div>
           <h1 className="text-3xl font-bold">{product.title}</h1>
+          <div className="mt-3 flex items-center gap-2">
+            <span aria-hidden="true" className="text-amber-400">
+              ★
+            </span>
+            <span className="text-sm font-medium">
+              {product.rating.toFixed(1)} / 5
+            </span>
+          </div>
+
           <p className="mt-4 leading-relaxed">{product.description}</p>
+
+          {product.tags.length > 0 && (
+            <div className="mt-4 flex flex-wrap gap-2">
+              {product.tags.map((tag) => (
+                <span
+                  key={tag}
+                  className="rounded-md border border-zinc-700 bg-zinc-900 px-3 py-1 text-xs text-zinc-100"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
+
+          <div className="mt-6 border-t border-gray-100 pt-6">
+            <div className="flex flex-wrap items-center gap-3">
+              <p className="text-3xl font-bold">
+                {product.discountedPrice.toFixed(2)} kr
+              </p>
+
+              {hasDiscount && (
+                <>
+                  <span className="text-lg text-zinc-700 line-through">
+                    {product.price.toFixed(2)} kr
+                  </span>
+
+                  <span className="rounded bg-zinc-900 px-3 py-1 text-sm font-semibold text-white">
+                    -{discountPercentage}%
+                  </span>
+                </>
+              )}
+              <section aria-labelledby="reviews-heading" className="mt-12">
+                <h2 id="reviews-heading" className="text-2xl font-bold">
+                  Customer reviews
+                </h2>
+
+                {product.reviews.length > 0 ? (
+                  <div className="mt-6 grid gap-4 md:grid-cols-2">
+                    {product.reviews.map((review) => (
+                      <article
+                        key={review.id}
+                        className="rounded-lg bg-zinc-900 p-5 text-zinc-100"
+                      >
+                        <h3 className="font-semibold">{review.username}</h3>
+                        <p className="mt-2 text-sm">
+                          <span aria-hidden="true" className="text-amber-400">
+                            ★
+                          </span>{" "}
+                          {review.rating.toFixed(1)} / 5
+                        </p>
+                        <p className="mt-3 text-sm leading-relaxed">
+                          {review.description}
+                        </p>
+                      </article>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="mt-4">No customer reviews yet.</p>
+                )}
+              </section>
+            </div>
+          </div>
         </div>
       </div>
     </main>

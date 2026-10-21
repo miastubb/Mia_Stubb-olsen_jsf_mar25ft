@@ -38,24 +38,22 @@ export default function ProductCard({ product }: ProductCardProps) {
           <h2 className="text-lg font-semibold">{product.title}</h2>
 
           <div className="mt-2 flex items-center gap-2">
-            <div className="mt-2 flex items-center gap-2">
-              <span aria-hidden="true" className="text-amber-400">
-                ★
-              </span>
-              <span className="text-sm text-zinc-300">
-                {product.rating.toFixed(1)} / 5
-              </span>
-            </div>
-            <p className="text-lg font-bold">
-              {product.discountedPrice.toFixed(2)} kr
-            </p>
-
-            {hasDiscount && (
-              <p className="text-sm text-zinc-400 line-through">
-                {product.price.toFixed(2)} kr
-              </p>
-            )}
+            <span aria-hidden="true" className="text-amber-400">
+              ★
+            </span>
+            <span className="text-sm text-zinc-300">
+              {product.rating.toFixed(1)} / 5
+            </span>
           </div>
+          <p className="text-lg font-bold">
+            {product.discountedPrice.toFixed(2)} kr
+          </p>
+
+          {hasDiscount && (
+            <p className="text-sm text-zinc-400 line-through">
+              {product.price.toFixed(2)} kr
+            </p>
+          )}
         </div>
       </Link>
     </article>

@@ -21,7 +21,7 @@ async function ProductDetails({ params }: ProductPageProps) {
     : 0;
 
   return (
-    <main className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <div className="grid gap-8 md:grid-cols-2">
         <div className="flex h-80 items-center justify-center overflow-hidden rounded-lg bg-zinc-900 p-6 sm:h-96">
           <Image
@@ -80,7 +80,7 @@ async function ProductDetails({ params }: ProductPageProps) {
           </div>
         </div>
       </div>
-      
+
       <section aria-labelledby="reviews-heading" className="mt-12">
         <h2 id="reviews-heading" className="text-2xl font-bold">
           Customer reviews
@@ -88,7 +88,7 @@ async function ProductDetails({ params }: ProductPageProps) {
 
         <ReviewCarousel reviews={product.reviews} />
       </section>
-    </main>
+    </div>
   );
 }
 

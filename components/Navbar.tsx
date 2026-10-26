@@ -1,55 +1,67 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import Link from "next/link";
 import { IoClose, IoMenu } from "react-icons/io5";
+import { NavbarMiniCart } from "@/components/NavbarMiniCart";
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isCartOpen, setIsCartOpen] = useState(false);
+
+  const handleCartOpenChange = useCallback((open: boolean) => {
+    setIsCartOpen(open);
+
+    if (open) {
+      setIsMenuOpen(false);
+    }
+  }, []);
+
+  function toggleMenu() {
+    setIsMenuOpen((open) => !open);
+    setIsCartOpen(false);
+  }
 
   return (
-    <nav className="border-b border-zinc-700 bg-zinc-950 text-zinc-100">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          <div className="flex items-center">
-            <div className="shrink-0">
-              <Link
-                href="/"
-                className="text-2xl font-semibold tracking-[0.2em] uppercase"
-              >
-                NEXT<span className="text-zinc-400">STORE</span>
-              </Link>
-            </div>
+    <nav className="relative z-40 border-b border-zinc-700 bg-zinc-950 text-zinc-100">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="flex h-16 items-center justify-between">
+          <Link
+            href="/"
+            className="shrink-0 text-2xl font-semibold uppercase tracking-[0.2em]"
+          >
+            NEXT<span className="text-zinc-400">STORE</span>
+          </Link>
+
+          <div className="hidden items-center gap-4 md:flex">
+            <Link
+              href="/"
+              className="rounded-md px-3 py-2 text-sm font-medium hover:bg-gray-700"
+            >
+              Home
+            </Link>
+
+            <Link
+              href="/contact"
+              className="rounded-md px-3 py-2 text-sm font-medium hover:bg-gray-700"
+            >
+              Contact
+            </Link>
           </div>
-          <div className="hidden md:block">
-            <div className="ml-10 flex items-baseline space-x-4">
-              <Link
-                href="/"
-                className="hover:bg-gray-700 px-3 py-2 rounded-md text-sm font-medium"
-              >
-                Home
-              </Link>
-              <Link
-                href="/cart"
-                className="hover:bg-gray-700 px-3 py-2 rounded-md text-sm font-medium"
-              >
-                Cart
-              </Link>
-              <Link
-                href="/contact"
-                className="hover:bg-gray-700 px-3 py-2 rounded-md text-sm font-medium"
-              >
-                Contact
-              </Link>
-            </div>
-          </div>
-          <div className="-mr-2 flex items-center md:hidden">
+
+          <div className="flex items-center gap-2">
+            <NavbarMiniCart
+              isOpen={isCartOpen}
+              onOpenChange={handleCartOpenChange}
+            />
+
             <button
               type="button"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              onClick={toggleMenu}
               aria-label={isMenuOpen ? "Close menu" : "Open menu"}
               aria-expanded={isMenuOpen}
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none"
+              aria-controls={isMenuOpen ? "mobile-navigation" : undefined}
+              className="inline-flex h-10 w-10 items-center justify-center rounded-md text-gray-400 hover:bg-gray-700 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white md:hidden"
             >
               {isMenuOpen ? (
                 <IoClose className="h-6 w-6" aria-hidden="true" />
@@ -60,24 +72,30 @@ export function Navbar() {
           </div>
         </div>
       </div>
+
       {isMenuOpen && (
-        <div className="md:hidden">
-          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+        <div id="mobile-navigation" className="md:hidden">
+          <div className="space-y-1 px-4 pb-3 pt-2">
             <Link
               href="/"
-              className="hover:bg-gray-700 block px-3 py-2 rounded-md text-base font-medium"
+              onClick={() => setIsMenuOpen(false)}
+              className="block rounded-md px-3 py-2 text-base font-medium hover:bg-gray-700"
             >
               Home
             </Link>
+
             <Link
               href="/cart"
-              className="hover:bg-gray-700 block px-3 py-2 rounded-md text-base font-medium"
+              onClick={() => setIsMenuOpen(false)}
+              className="block rounded-md px-3 py-2 text-base font-medium hover:bg-gray-700"
             >
               Cart
             </Link>
+
             <Link
               href="/contact"
-              className="hover:bg-gray-700 block px-3 py-2 rounded-md text-base font-medium"
+              onClick={() => setIsMenuOpen(false)}
+              className="block rounded-md px-3 py-2 text-base font-medium hover:bg-gray-700"
             >
               Contact
             </Link>

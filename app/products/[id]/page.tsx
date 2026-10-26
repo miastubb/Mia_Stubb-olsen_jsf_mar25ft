@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { getProductById } from "@/services/products";
 import Image from "next/image";
 import ReviewCarousel from "@/components/ReviewCarousel";
+import AddToCartButton from "@/components/AddToCartButton";
 
 interface ProductPageProps {
   params: Promise<{ id: string }>;
@@ -78,6 +79,7 @@ async function ProductDetails({ params }: ProductPageProps) {
               )}
             </div>
           </div>
+          <AddToCartButton product={product} />
         </div>
       </div>
 

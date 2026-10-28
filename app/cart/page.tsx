@@ -142,7 +142,7 @@ export default function CartPage() {
             <button
               type="button"
               disabled
-              className="mt-8 w-full rounded-lg bg-[#667D70] px-6 py-3 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-70"
+              className="mt-8 w-full rounded-lg border border-black/40 bg-[#667D70] px-6 py-3 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-70"
             >
               Proceed to checkout
             </button>

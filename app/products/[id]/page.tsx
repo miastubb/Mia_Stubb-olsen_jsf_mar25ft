@@ -3,6 +3,7 @@ import { getProductById } from "@/services/products";
 import Image from "next/image";
 import ReviewCarousel from "@/components/ReviewCarousel";
 import AddToCartButton from "@/components/AddToCartButton";
+import ProductRating from "@/components/ProductRating";
 
 interface ProductPageProps {
   params: Promise<{ id: string }>;
@@ -36,14 +37,12 @@ async function ProductDetails({ params }: ProductPageProps) {
 
         <div>
           <h1 className="text-3xl font-bold">{product.title}</h1>
-          <div className="mt-3 flex items-center gap-2">
-            <span aria-hidden="true" className="text-amber-400">
-              ★
-            </span>
-            <span className="text-sm font-medium">
-              {product.rating.toFixed(1)} / 5
-            </span>
-          </div>
+
+          <ProductRating
+            rating={product.rating}
+            reviewCount={product.reviews.length}
+            className="mt-3"
+          />
 
           <p className="mt-4 leading-relaxed">{product.description}</p>
 

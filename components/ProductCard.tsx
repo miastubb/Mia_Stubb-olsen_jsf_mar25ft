@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Product } from "@/types/product";
 import { formatCurrency } from "@/utils/formatCurrency";
+import ProductRating from "@/components/ProductRating";
 
 interface ProductCardProps {
   product: Product;
@@ -38,16 +39,11 @@ export default function ProductCard({ product }: ProductCardProps) {
         <div className="p-4">
           <h2 className="text-lg font-semibold">{product.title}</h2>
 
-          <div className="mt-2 flex items-center gap-2">
-            <span aria-hidden="true" className="text-amber-400">
-              ★
-            </span>
-            <span className="text-sm text-zinc-300">
-              <span className="text-sm text-zinc-300">
-                {product.rating.toFixed(1)} / 5
-              </span>
-            </span>
-          </div>
+          <ProductRating
+            rating={product.rating}
+            reviewCount={product.reviews.length}
+            className="mt-2"
+          />
           <p className="text-lg font-bold">
             {formatCurrency(product.discountedPrice)}
           </p>

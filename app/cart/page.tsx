@@ -4,11 +4,14 @@ import Image from "next/image";
 import { useCart } from "@/context/CartContext";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { MAX_CART_QUANTITY } from "@/utils/cartConstants";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const quantityButtonClasses =
   "flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-zinc-400 text-zinc-800 transition-colors hover:bg-[#E8EEE9] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#667D70] disabled:cursor-not-allowed disabled:opacity-40";
 
 export default function CartPage() {
+  const router = useRouter();
   const { items, updateQuantity, removeFromCart } = useCart();
 
   const subtotal = items.reduce(
@@ -23,6 +26,12 @@ export default function CartPage() {
 
   const discount = subtotal - total;
 
+  function handleCheckout() {
+    if (items.length === 0) return;
+
+    router.push("/checkout");
+  }
+
   return (
     <div className="mx-auto w-full max-w-2xl">
       <h1 className="mb-8 text-3xl font-bold text-zinc-950">Shopping Cart</h1>
@@ -30,6 +39,13 @@ export default function CartPage() {
       {items.length === 0 ? (
         <div className="rounded-xl bg-white px-6 py-12 text-center shadow-sm sm:px-10">
           <p className="text-zinc-700">Your cart is empty.</p>
+
+          <Link
+            href="/"
+            className="mt-6 inline-flex rounded-lg border border-black/40 bg-[#667D70] px-6 py-3 font-semibold text-white transition-colors hover:bg-[#53675B] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#667D70]"
+          >
+            Continue shopping
+          </Link>
         </div>
       ) : (
         <section
@@ -141,15 +157,11 @@ export default function CartPage() {
 
             <button
               type="button"
-              disabled
-              className="mt-8 w-full rounded-lg border border-black/40 bg-[#667D70] px-6 py-3 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-70"
+              onClick={handleCheckout}
+              className="mt-8 w-full cursor-pointer rounded-lg border border-black/40 bg-[#667D70] px-6 py-3 font-semibold text-white transition-colors hover:bg-[#53675B] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#667D70]"
             >
               Proceed to checkout
             </button>
-
-            <p className="mt-3 text-center text-sm text-zinc-600">
-              Checkout coming soon
-            </p>
           </div>
         </section>
       )}

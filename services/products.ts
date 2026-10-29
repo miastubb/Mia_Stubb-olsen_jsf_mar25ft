@@ -33,6 +33,18 @@ export async function getProducts(
   return result;
 }
 
+export async function getAllProducts(): Promise<Product[]> {
+  const firstPage = await getProducts(1, 1);
+
+  if (firstPage.meta.totalCount === 0) {
+    return [];
+  }
+
+  const result = await getProducts(1, firstPage.meta.totalCount);
+
+  return result.data;
+}
+
 export async function getProductById(id: string): Promise<Product> {
   const response = await fetch(`${API_URL}/${id}`);
 

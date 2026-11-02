@@ -6,25 +6,19 @@ import { formatCurrency } from "@/utils/formatCurrency";
 import { MAX_CART_QUANTITY } from "@/utils/cartConstants";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import {
+  calculateCartTotals,
+  calculateLineTotal,
+} from "@/utils/cartCalculations";
 
 const quantityButtonClasses =
-  "flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-zinc-400 text-zinc-800 transition-colors hover:bg-[#E8EEE9] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#667D70] disabled:cursor-not-allowed disabled:opacity-40";
+  "flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-zinc-400 text-zinc-800 transition-colors hover:bg-[#E8EEE9] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#667D70] cursor-pointer";
 
 export default function CartPage() {
   const router = useRouter();
   const { items, updateQuantity, removeFromCart } = useCart();
 
-  const subtotal = items.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0,
-  );
-
-  const total = items.reduce(
-    (sum, item) => sum + item.discountedPrice * item.quantity,
-    0,
-  );
-
-  const discount = subtotal - total;
+  const { subtotal, discount, total } = calculateCartTotals(items);
 
   function handleCheckout() {
     if (items.length === 0) return;
@@ -107,58 +101,44 @@ export default function CartPage() {
                     </button>
                   </div>
 
-                  <div className="flex items-center gap-4">
-                    <p className="min-w-28 text-right text-lg font-bold text-zinc-950">
-                      {formatCurrency(item.discountedPrice * item.quantity)}
-                    </p>
+                  <p className="font-semibold text-zinc-950">
+                    {formatCurrency(calculateLineTotal(item))}
+                  </p>
 
-                    <button
-                      type="button"
-                      onClick={() => removeFromCart(item.id)}
-                      aria-label={`Remove ${item.title} from cart`}
-                      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-zinc-300 bg-zinc-50 text-lg font-medium text-zinc-800 transition-colors hover:bg-[#E8EEE9] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#667D70]"
-                    >
-                      <span aria-hidden="true">×</span>
-                    </button>
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => removeFromCart(item.id)}
+                    className="text-sm font-medium text-zinc-700 underline hover:text-zinc-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#667D70]"
+                  >
+                    Remove
+                  </button>
                 </div>
               </li>
             ))}
           </ul>
-          <div className="mt-8 border-t border-zinc-200 pt-6">
-            <h2 className="mb-6 text-xl font-semibold text-zinc-950">
-              Order summary
-            </h2>
 
-            <div className="space-y-3">
-              <div className="flex items-center justify-between gap-4">
-                <span className="text-zinc-700">Subtotal</span>
-                <span className="text-right text-zinc-950">
-                  {formatCurrency(subtotal)}
-                </span>
+          <div className="border-t border-zinc-200 py-6">
+            <div className="flex justify-between text-zinc-700">
+              <span>Subtotal</span>
+              <span>{formatCurrency(subtotal)}</span>
+            </div>
+
+            {discount > 0 && (
+              <div className="mt-2 flex justify-between text-zinc-700">
+                <span>Discount</span>
+                <span>−{formatCurrency(discount)}</span>
               </div>
+            )}
 
-              {discount > 0 && (
-                <div className="flex items-center justify-between gap-4">
-                  <span className="text-zinc-700">Discount</span>
-                  <span className="text-right font-medium text-[#526B5B]">
-                    −{formatCurrency(discount)}
-                  </span>
-                </div>
-              )}
-
-              <div className="flex items-center justify-between gap-4 border-t border-zinc-200 pt-4">
-                <span className="font-semibold text-zinc-950">Total</span>
-                <span className="text-right text-xl font-bold text-zinc-950">
-                  {formatCurrency(total)}
-                </span>
-              </div>
+            <div className="mt-4 flex justify-between font-bold text-zinc-950">
+              <span>Total</span>
+              <span>{formatCurrency(total)}</span>
             </div>
 
             <button
               type="button"
               onClick={handleCheckout}
-              className="mt-8 w-full cursor-pointer rounded-lg border border-black/40 bg-[#667D70] px-6 py-3 font-semibold text-white transition-colors hover:bg-[#53675B] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#667D70]"
+              className="mt-6 w-full cursor-pointer rounded-lg border border-black/40 bg-[#667D70] px-6 py-3 font-semibold text-white transition-colors hover:bg-[#53675B] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#667D70]"
             >
               Proceed to checkout
             </button>

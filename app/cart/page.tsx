@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useCart } from "@/context/CartContext";
+import { useToast } from "@/context/ToastContext";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { MAX_CART_QUANTITY } from "@/utils/cartConstants";
 import { useRouter } from "next/navigation";
@@ -17,6 +18,7 @@ const quantityButtonClasses =
 export default function CartPage() {
   const router = useRouter();
   const { items, updateQuantity, removeFromCart } = useCart();
+  const { showToast } = useToast();
 
   const { subtotal, discount, total } = calculateCartTotals(items);
 
@@ -24,6 +26,11 @@ export default function CartPage() {
     if (items.length === 0) return;
 
     router.push("/checkout");
+  }
+
+  function handleRemoveItem(id: string) {
+    removeFromCart(id);
+    showToast("Removed from cart");
   }
 
   return (
@@ -36,7 +43,7 @@ export default function CartPage() {
 
           <Link
             href="/"
-            className="mt-6 inline-flex rounded-lg border border-black/40 bg-[#667D70] px-6 py-3 font-semibold text-white transition-colors hover:bg-[#53675B] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#667D70]"
+            className="mt-6 inline-flex rounded-lg border border-black/40 bg-teal-800 px-6 py-3 font-semibold text-white transition-colors hover:bg-teal-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-700"
           >
             Continue shopping
           </Link>
@@ -107,7 +114,7 @@ export default function CartPage() {
 
                   <button
                     type="button"
-                    onClick={() => removeFromCart(item.id)}
+                    onClick={() => handleRemoveItem(item.id)}
                     className="text-sm font-medium text-zinc-700 underline hover:text-zinc-950 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#667D70]"
                   >
                     Remove

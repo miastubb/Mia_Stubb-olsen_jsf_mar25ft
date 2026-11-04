@@ -102,4 +102,51 @@ describe("cart storage", () => {
 
     expect(JSON.parse(storage.get(STORAGE_KEY) ?? "null")).toEqual([]);
   });
+
+  it("preserves cart updates in memory when storage fails", async () => {
+    const { updateStoredCart } = await import("@/utils/cartStorage");
+
+    vi.stubGlobal("localStorage", {
+      getItem: () => null,
+      setItem: () => {
+        throw new Error("Storage unavailable");
+      },
+    });
+
+    updateStoredCart(() => [testItem]);
+
+    updateStoredCart((items) => {
+      expect(items).toEqual([testItem]);
+      return items;
+    });
+  });
+
+  it("preserves newer in-memory cart when storage contains stale data", async () => {
+    const oldCart = [{ ...testItem, quantity: 1 }];
+    const updatedCart = [{ ...testItem, quantity: 2 }];
+
+    storage.set(STORAGE_KEY, JSON.stringify(oldCart));
+
+    const { updateStoredCart } = await import("@/utils/cartStorage");
+
+    // Simulate a browser that can read storage but cannot write.
+    vi.stubGlobal("localStorage", {
+      getItem: (key: string) => storage.get(key) ?? null,
+      setItem: () => {
+        throw new Error("Storage write failed");
+      },
+    });
+
+    // First update should work in memory.
+    updateStoredCart(() => updatedCart);
+
+    // Trigger another snapshot read through the public API.
+    updateStoredCart((items) => {
+      expect(items).toEqual(updatedCart);
+      return items;
+    });
+
+    // Confirm that persistent storage still contains the older cart.
+    expect(JSON.parse(storage.get(STORAGE_KEY) ?? "null")).toEqual(oldCart);
+  });
 });

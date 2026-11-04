@@ -1,9 +1,11 @@
 import { Suspense } from "react";
-import { getProductById } from "@/services/products";
+import { getProductById, ProductNotFoundError } from "@/services/products";
+import { notFound } from "next/navigation";
 import Image from "next/image";
 import ReviewCarousel from "@/components/ReviewCarousel";
 import AddToCartButton from "@/components/AddToCartButton";
 import ProductRating from "@/components/ProductRating";
+import { formatCurrency } from "@/utils/formatCurrency";
 
 interface ProductPageProps {
   params: Promise<{ id: string }>;
@@ -11,7 +13,17 @@ interface ProductPageProps {
 
 async function ProductDetails({ params }: ProductPageProps) {
   const { id } = await params;
-  const product = await getProductById(id);
+  let product: Awaited<ReturnType<typeof getProductById>>;
+
+  try {
+    product = await getProductById(id);
+  } catch (error) {
+    if (error instanceof ProductNotFoundError) {
+      notFound();
+    }
+
+    throw error;
+  }
 
   const hasDiscount =
     product.price > 0 && product.discountedPrice < product.price;
@@ -62,13 +74,13 @@ async function ProductDetails({ params }: ProductPageProps) {
           <div className="mt-6 border-t border-gray-100 pt-6">
             <div className="flex flex-wrap items-center gap-3">
               <p className="text-3xl font-bold">
-                {product.discountedPrice.toFixed(2)} kr
+                {formatCurrency(product.discountedPrice)}
               </p>
 
               {hasDiscount && (
                 <>
                   <span className="text-lg text-zinc-700 line-through">
-                    {product.price.toFixed(2)} kr
+                    {formatCurrency(product.price)}
                   </span>
 
                   <span className="rounded bg-zinc-900 px-3 py-1 text-sm font-semibold text-white">

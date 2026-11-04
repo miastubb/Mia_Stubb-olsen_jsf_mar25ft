@@ -6,6 +6,10 @@ import Link from "next/link";
 import { IoCartOutline, IoCloseOutline } from "react-icons/io5";
 import { useCart } from "@/context/CartContext";
 import { formatCurrency } from "@/utils/formatCurrency";
+import {
+  calculateCartTotals,
+  calculateLineTotal,
+} from "@/utils/cartCalculations";
 
 interface NavbarMiniCartProps {
   isOpen: boolean;
@@ -22,10 +26,7 @@ export function NavbarMiniCart({ isOpen, onOpenChange }: NavbarMiniCartProps) {
 
   const cartQuantity = items.reduce((total, item) => total + item.quantity, 0);
 
-  const subtotal = items.reduce(
-    (total, item) => total + item.discountedPrice * item.quantity,
-    0,
-  );
+  const { total } = calculateCartTotals(items);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -80,7 +81,7 @@ export function NavbarMiniCart({ isOpen, onOpenChange }: NavbarMiniCartProps) {
         {cartQuantity > 0 && (
           <span
             aria-hidden="true"
-            className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#667D70] px-1 text-xs font-semibold text-white"
+            className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-teal-800 px-1 text-xs font-semibold text-white"
           >
             {cartQuantity}
           </span>
@@ -138,17 +139,15 @@ export function NavbarMiniCart({ isOpen, onOpenChange }: NavbarMiniCartProps) {
                     </div>
 
                     <span className="shrink-0 text-sm font-semibold">
-                      {formatCurrency(item.discountedPrice * item.quantity)}
+                      {formatCurrency(calculateLineTotal(item))}
                     </span>
                   </li>
                 ))}
               </ul>
 
               <div className="mt-4 flex items-center justify-between border-t border-zinc-200 pt-4">
-                <span className="text-sm font-medium">Subtotal</span>
-                <span className="font-semibold">
-                  {formatCurrency(subtotal)}
-                </span>
+                <span className="text-sm font-medium">Total</span>
+                <span className="font-semibold">{formatCurrency(total)}</span>
               </div>
             </>
           )}
@@ -156,7 +155,7 @@ export function NavbarMiniCart({ isOpen, onOpenChange }: NavbarMiniCartProps) {
           <Link
             href="/cart"
             onClick={() => onOpenChange(false)}
-            className="mt-4 flex min-h-11 items-center justify-center rounded-lg bg-[#667D70] px-4 py-3 text-sm font-semibold text-white hover:bg-[#53675B] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#667D70]"
+            className="mt-4 flex min-h-11 items-center justify-center rounded-lg bg-teal-800 px-4 py-3 text-sm font-semibold text-white hover:bg-teal-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-700"
           >
             View full cart
           </Link>

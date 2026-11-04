@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import type { Product } from "@/types/product";
 import { filterProducts } from "@/utils/filterProducts";
 import Image from "next/image";
+import { formatCurrency } from "@/utils/formatCurrency";
 
 export default function NavbarSearch() {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -111,12 +112,7 @@ export default function NavbarSearch() {
                       </p>
 
                       <p className="mt-1 text-sm text-zinc-300">
-                        {new Intl.NumberFormat("nb-NO", {
-                          style: "currency",
-                          currency: "NOK",
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        }).format(
+                        {formatCurrency(
                           product.discountedPrice < product.price
                             ? product.discountedPrice
                             : product.price,

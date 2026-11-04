@@ -10,7 +10,7 @@ export default function CheckoutSuccessPage() {
       >
         <IoCheckmarkCircleOutline
           aria-hidden="true"
-          className="mx-auto mb-6 h-16 w-16 text-[#667D70]"
+          className="mx-auto mb-6 h-16 w-16 text-teal-800"
         />
 
         <h1
@@ -29,7 +29,7 @@ export default function CheckoutSuccessPage() {
 
         <Link
           href="/"
-          className="mt-8 inline-flex rounded-lg border border-black/40 bg-[#667D70] px-6 py-3 font-semibold text-white transition-colors hover:bg-[#53675B] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#667D70]"
+          className="mt-8 inline-flex rounded-lg border border-black/40 bg-teal-800 px-6 py-3 font-semibold text-white transition-colors hover:bg-teal-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-700"
         >
           Continue shopping
         </Link>

@@ -44,7 +44,7 @@ export default function CheckoutPage() {
 
           <Link
             href="/"
-            className="mt-8 inline-flex rounded-lg border border-black/40 bg-[#667D70] px-6 py-3 font-semibold text-white transition-colors hover:bg-[#53675B] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#667D70]"
+            className="mt-8 inline-flex rounded-lg border border-black/40 bg-teal-800 px-6 py-3 font-semibold text-white transition-colors hover:bg-teal-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-700"
           >
             Continue shopping
           </Link>
@@ -302,7 +302,7 @@ export default function CheckoutPage() {
           <button
             type="submit"
             disabled={items.length === 0}
-            className="mt-8 w-full cursor-pointer rounded-lg border border-black/40 bg-[#667D70] px-6 py-3 font-semibold text-white transition-colors hover:bg-[#53675B] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#667D70] disabled:cursor-not-allowed disabled:opacity-50"
+            className="mt-8 w-full cursor-pointer rounded-lg border border-black/40 bg-teal-800 px-6 py-3 font-semibold text-white transition-colors hover:bg-teal-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
             Place demo order
           </button>

@@ -7,7 +7,9 @@ export interface CartTotals {
 }
 
 function toOre(amount: number): number {
-  return Math.round((amount + Number.EPSILON) * 100);
+  const scaledAmount = amount * 100;
+
+  return Math.round(scaledAmount + Number.EPSILON * Math.abs(scaledAmount));
 }
 
 function toKroner(ore: number): number {
@@ -38,4 +40,3 @@ export function calculateCartTotals(items: CartItem[]): CartTotals {
     total: toKroner(totals.total),
   };
 }
-

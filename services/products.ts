@@ -9,6 +9,13 @@ export class ProductsNotFoundError extends Error {
   }
 }
 
+export class ProductNotFoundError extends Error {
+  constructor(id: string) {
+    super(`Product ${id} was not found`);
+    this.name = "ProductNotFoundError";
+  }
+}
+
 export async function getProducts(
   page: number = 1,
   limit: number = 12,
@@ -46,7 +53,11 @@ export async function getAllProducts(): Promise<Product[]> {
 }
 
 export async function getProductById(id: string): Promise<Product> {
-  const response = await fetch(`${API_URL}/${id}`);
+  const response = await fetch(`${API_URL}/${encodeURIComponent(id)}`);
+
+  if (response.status === 404) {
+    throw new ProductNotFoundError(id);
+  }
 
   if (!response.ok) {
     throw new Error(`Failed to fetch product ${id}: ${response.status}`);

@@ -80,14 +80,11 @@ function getSnapshot(): CartItem[] {
   try {
     const raw = localStorage.getItem(CART_STORAGE_KEY);
 
-    // React requires the same reference when storage hasn't changed.
     if (raw !== cachedRaw) {
       cachedRaw = raw;
       cachedItems = parseCart(raw);
     }
-  } catch {
-    // Keep the current in-memory cart if storage is unavailable.
-  }
+  } catch {}
 
   return cachedItems;
 }
@@ -134,9 +131,11 @@ export function updateStoredCart(
     localStorage.setItem(CART_STORAGE_KEY, raw);
     cachedRaw = raw;
   } catch {
-    // Cart remains usable in memory.
-    cachedRaw = undefined;
+    try {
+      cachedRaw = localStorage.getItem(CART_STORAGE_KEY);
+    } catch {
+      cachedRaw = null;
+    }
   }
-
   listeners.forEach((listener) => listener());
 }

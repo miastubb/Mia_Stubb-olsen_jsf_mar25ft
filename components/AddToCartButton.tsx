@@ -2,16 +2,26 @@
 
 import type { Product } from "@/types/product";
 import { useCart } from "@/context/CartContext";
+import { useToast } from "@/context/ToastContext";
+import { MAX_CART_QUANTITY } from "@/utils/cartConstants";
 
 interface AddToCartButtonProps {
   product: Product;
 }
 
 export default function AddToCartButton({ product }: AddToCartButtonProps) {
-  const { addToCart } = useCart();
+  const { items, addToCart } = useCart();
+  const { showToast } = useToast();
 
   function handleAddToCart() {
+    const cartItem = items.find((item) => item.id === product.id);
+
+    if (cartItem && cartItem.quantity >= MAX_CART_QUANTITY) {
+      return;
+    }
+
     addToCart(product);
+    showToast("Added to cart");
   }
 
   return (

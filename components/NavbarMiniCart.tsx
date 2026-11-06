@@ -3,9 +3,16 @@
 import { useEffect, useId, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { IoCartOutline, IoCloseOutline } from "react-icons/io5";
+import {
+  IoAddOutline,
+  IoCartOutline,
+  IoCloseOutline,
+  IoRemoveOutline,
+  IoTrashOutline,
+} from "react-icons/io5";
 import { useCart } from "@/context/CartContext";
 import { formatCurrency } from "@/utils/formatCurrency";
+import { MAX_CART_QUANTITY } from "@/utils/cartConstants";
 import {
   calculateCartTotals,
   calculateLineTotal,
@@ -17,7 +24,7 @@ interface NavbarMiniCartProps {
 }
 
 export function NavbarMiniCart({ isOpen, onOpenChange }: NavbarMiniCartProps) {
-  const { items } = useCart();
+  const { items, updateQuantity, removeFromCart } = useCart();
 
   const panelId = useId();
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -83,12 +90,12 @@ export function NavbarMiniCart({ isOpen, onOpenChange }: NavbarMiniCartProps) {
             aria-hidden="true"
             className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-teal-800 px-1 text-xs font-semibold text-white"
           >
-            {cartQuantity}
+            {cartQuantity > 99 ? "99+" : cartQuantity}
           </span>
         )}
       </button>
 
-      {isOpen && (
+       {isOpen && (
         <div
           id={panelId}
           role="region"
@@ -103,7 +110,7 @@ export function NavbarMiniCart({ isOpen, onOpenChange }: NavbarMiniCartProps) {
               type="button"
               aria-label="Close cart preview"
               onClick={closeCart}
-              className="rounded-md p-2 hover:bg-zinc-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#667D70]"
+              className="rounded-md p-2 hover:bg-zinc-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-800"
             >
               <IoCloseOutline className="h-5 w-5" aria-hidden="true" />
             </button>
@@ -133,14 +140,49 @@ export function NavbarMiniCart({ isOpen, onOpenChange }: NavbarMiniCartProps) {
                       <p className="line-clamp-2 text-sm font-medium">
                         {item.title}
                       </p>
-                      <p className="mt-1 text-xs text-zinc-600">
-                        Quantity: {item.quantity}
+                      <p className="mt-1 text-sm font-semibold">
+                        {formatCurrency(calculateLineTotal(item))}
                       </p>
-                    </div>
 
-                    <span className="shrink-0 text-sm font-semibold">
-                      {formatCurrency(calculateLineTotal(item))}
-                    </span>
+                      <div className="mt-2 flex items-center gap-1">
+                        <button
+                          type="button"
+                          aria-label={`Decrease quantity of ${item.title}`}
+                          disabled={item.quantity <= 1}
+                          onClick={() =>
+                            updateQuantity(item.id, item.quantity - 1)
+                          }
+                          className="flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-md border border-zinc-300 enabled:hover:bg-zinc-100 disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-800"
+                        >
+                          <IoRemoveOutline aria-hidden="true" />
+                        </button>
+                        <span className="min-w-6 text-center text-sm tabular-nums">
+                          {item.quantity}
+                        </span>
+                        <button
+                          type="button"
+                          aria-label={`Increase quantity of ${item.title}`}
+                          disabled={item.quantity >= MAX_CART_QUANTITY}
+                          onClick={() =>
+                            updateQuantity(item.id, item.quantity + 1)
+                          }
+                          className="flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-md border border-zinc-300 enabled:hover:bg-zinc-100 disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-800"
+                        >
+                          <IoAddOutline aria-hidden="true" />
+                        </button>
+                        <button
+                          type="button"
+                          aria-label={`Remove ${item.title} from cart`}
+                          onClick={() => {
+                            removeFromCart(item.id);
+                            closeRef.current?.focus();
+                          }}
+                          className="ml-auto flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-md text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-800"
+                        >
+                          <IoTrashOutline aria-hidden="true" />
+                        </button>
+                      </div>
+                    </div>
                   </li>
                 ))}
               </ul>

@@ -36,7 +36,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           )}
         </div>
 
-        <div className="p-4">
+        <div className="p-2 sm:p-4">
           <h2 className="text-lg font-semibold">{product.title}</h2>
 
           <ProductRating

@@ -6,9 +6,31 @@ import ReviewCarousel from "@/components/ReviewCarousel";
 import AddToCartButton from "@/components/AddToCartButton";
 import ProductRating from "@/components/ProductRating";
 import { formatCurrency } from "@/utils/formatCurrency";
+import type { Metadata } from "next";
 
 interface ProductPageProps {
   params: Promise<{ id: string }>;
+}
+
+export async function generateMetadata({
+  params,
+}: ProductPageProps): Promise<Metadata> {
+  const { id } = await params;
+
+  try {
+    const product = await getProductById(id);
+
+    return {
+      title: product.title,
+      description: product.description.slice(0, 160),
+    };
+  } catch (error) {
+    if (error instanceof ProductNotFoundError) {
+      notFound();
+    }
+
+    throw error;
+  }
 }
 
 async function ProductDetails({ params }: ProductPageProps) {

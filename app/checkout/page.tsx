@@ -6,31 +6,42 @@ import { formatCurrency } from "@/utils/formatCurrency";
 import type { SubmitEvent } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { calculateCartTotals } from "@/utils/cartCalculations";
 
 export default function CheckoutPage() {
   const router = useRouter();
   const { items, clearCart } = useCart();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [shippingMethod, setShippingMethod] = useState<"standard" | "express">(
     "standard",
   );
 
   const shippingCost = shippingMethod === "standard" ? 79 : 149;
 
-  const subtotal = items.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0,
-  );
+  const {
+    subtotal,
+    discount,
+    total: productTotal,
+  } = calculateCartTotals(items);
 
-  const productTotal = items.reduce(
-    (sum, item) => sum + item.discountedPrice * item.quantity,
-    0,
-  );
-
-  const discount = subtotal - productTotal;
   const orderTotal = productTotal + shippingCost;
 
   const inputClasses =
     "mt-2 w-full rounded-lg border border-zinc-300 bg-white px-4 py-3 text-zinc-950 placeholder:text-zinc-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#667D70]";
+
+  if (isSubmitting) {
+    return (
+      <div className="mx-auto w-full max-w-2xl">
+        <h1 className="mb-8 text-3xl font-bold text-zinc-950">
+          Completing your demo order
+        </h1>
+
+        <p role="status" className="text-zinc-700">
+          Preparing your order confirmation...
+        </p>
+      </div>
+    );
+  }
 
   if (items.length === 0) {
     return (
@@ -56,14 +67,13 @@ export default function CheckoutPage() {
   function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (items.length === 0) return;
+    if (isSubmitting || items.length === 0) return;
 
     try {
       sessionStorage.setItem("nextstore-demo-checkout", "completed");
-    } catch {
-      // Storage may be unavailable in restricted browser environments.
-    }
+    } catch {}
 
+    setIsSubmitting(true);
     clearCart();
     router.push("/checkout-success");
   }

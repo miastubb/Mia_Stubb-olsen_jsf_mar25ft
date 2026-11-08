@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -30,13 +31,34 @@ export function NavbarMiniCart({ isOpen, onOpenChange }: NavbarMiniCartProps) {
   const triggerRef = useRef<HTMLButtonElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const pathname = usePathname();
+  const isCartPage = pathname === "/cart";
 
   const cartQuantity = items.reduce((total, item) => total + item.quantity, 0);
 
   const { total } = calculateCartTotals(items);
 
+  const cartLabel = `Shopping cart, ${cartQuantity} ${
+    cartQuantity === 1 ? "item" : "items"
+  }`;
+
+  const cartIcon = (
+    <>
+      <IoCartOutline className="h-6 w-6" aria-hidden="true" />
+
+      {cartQuantity > 0 && (
+        <span
+          aria-hidden="true"
+          className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-teal-800 px-1 text-xs font-semibold text-white"
+        >
+          {cartQuantity > 99 ? "99+" : cartQuantity}
+        </span>
+      )}
+    </>
+  );
+
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen || isCartPage) return;
 
     closeRef.current?.focus();
 
@@ -63,7 +85,13 @@ export function NavbarMiniCart({ isOpen, onOpenChange }: NavbarMiniCartProps) {
       document.removeEventListener("keydown", handleKeyDown);
       document.removeEventListener("pointerdown", handlePointerDown);
     };
-  }, [isOpen, onOpenChange]);
+  }, [isOpen, isCartPage, onOpenChange]);
+
+  useEffect(() => {
+    if (isCartPage && isOpen) {
+      onOpenChange(false);
+    }
+  }, [isCartPage, isOpen, onOpenChange]);
 
   function closeCart() {
     onOpenChange(false);
@@ -72,30 +100,29 @@ export function NavbarMiniCart({ isOpen, onOpenChange }: NavbarMiniCartProps) {
 
   return (
     <div ref={containerRef} className="static md:relative">
-      <button
-        ref={triggerRef}
-        type="button"
-        aria-label={`Shopping cart, ${cartQuantity} ${
-          cartQuantity === 1 ? "item" : "items"
-        }`}
-        aria-expanded={isOpen}
-        aria-controls={isOpen ? panelId : undefined}
-        onClick={() => onOpenChange(!isOpen)}
-        className="relative inline-flex h-10 w-10 items-center justify-center rounded-md text-zinc-100 hover:bg-zinc-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-      >
-        <IoCartOutline className="h-6 w-6" aria-hidden="true" />
+      {isCartPage ? (
+        <span
+          role="img"
+          aria-label={cartLabel}
+          className="relative inline-flex h-10 w-10 items-center justify-center text-zinc-100"
+        >
+          {cartIcon}
+        </span>
+      ) : (
+        <button
+          ref={triggerRef}
+          type="button"
+          aria-label={cartLabel}
+          aria-expanded={isOpen}
+          aria-controls={isOpen ? panelId : undefined}
+          onClick={() => onOpenChange(!isOpen)}
+          className="relative inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-md text-zinc-100 hover:bg-zinc-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+        >
+          {cartIcon}
+        </button>
+      )}
 
-        {cartQuantity > 0 && (
-          <span
-            aria-hidden="true"
-            className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-teal-800 px-1 text-xs font-semibold text-white"
-          >
-            {cartQuantity > 99 ? "99+" : cartQuantity}
-          </span>
-        )}
-      </button>
-
-       {isOpen && (
+      {isOpen && !isCartPage && (
         <div
           id={panelId}
           role="region"

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { IoClose, IoMenu, IoSearchOutline } from "react-icons/io5";
 import { NavbarMiniCart } from "@/components/NavbarMiniCart";
@@ -70,7 +70,7 @@ export function Navbar() {
   return (
     <nav
       ref={navbarRef}
-      className="relative z-40 border-b border-zinc-700 bg-zinc-950 text-zinc-100"
+      className="sticky top-0 z-40 border-b border-zinc-700 bg-zinc-950 text-zinc-100"
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
@@ -91,16 +91,14 @@ export function Navbar() {
             </Link>
           </div>
 
-          {/* Search, cart and mobile menu */}
           <div className="flex items-center gap-2">
-            {/* Search panel appears before the close button in keyboard order */}
             {isSearchOpen && (
               <div
                 id="navbar-search-panel"
                 className="absolute top-full right-0 left-0 border-t border-zinc-700 bg-zinc-900 px-4 py-4 shadow-lg"
               >
                 <div className="mx-auto max-w-7xl">
-                  <NavbarSearch />
+                  <NavbarSearch onNavigate={() => setIsSearchOpen(false)} />
                 </div>
               </div>
             )}
@@ -121,10 +119,16 @@ export function Navbar() {
               )}
             </button>
 
-            <NavbarMiniCart
-              isOpen={isCartOpen}
-              onOpenChange={handleCartOpenChange}
-            />
+            <Suspense
+              fallback={
+                <span aria-hidden="true" className="inline-block h-10 w-10" />
+              }
+            >
+              <NavbarMiniCart
+                isOpen={isCartOpen}
+                onOpenChange={handleCartOpenChange}
+              />
+            </Suspense>
 
             <button
               type="button"

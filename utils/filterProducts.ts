@@ -7,7 +7,15 @@ export function filterProducts(products: Product[], query: string): Product[] {
     return products;
   }
 
-  return products.filter((product) =>
-    product.title.toLocaleLowerCase().includes(normalizedQuery),
-  );
+  return products.filter((product) => {
+    const matchesTitle = product.title
+      .toLocaleLowerCase()
+      .includes(normalizedQuery);
+
+    const matchesTag = product.tags.some((tag) =>
+      tag.toLocaleLowerCase().includes(normalizedQuery),
+    );
+
+    return matchesTitle || matchesTag;
+  });
 }

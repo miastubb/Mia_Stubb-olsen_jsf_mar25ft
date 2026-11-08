@@ -25,8 +25,20 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const animationRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const dismissButtonRef = useRef<HTMLButtonElement>(null);
+  const returnFocusRef = useRef<HTMLElement | null>(null);
 
   const dismissToast = useCallback(() => {
+    if (document.activeElement === dismissButtonRef.current) {
+      const returnTarget = returnFocusRef.current;
+
+      if (returnTarget?.isConnected) {
+        returnTarget.focus();
+      } else {
+        document.getElementById("main-content")?.focus();
+      }
+    }
+
     if (timeoutRef.current !== null) {
       clearTimeout(timeoutRef.current);
       timeoutRef.current = null;
@@ -53,6 +65,15 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       if (animationRef.current !== null) {
         clearTimeout(animationRef.current);
         animationRef.current = null;
+      }
+
+      const activeElement = document.activeElement;
+
+      if (
+        activeElement instanceof HTMLElement &&
+        activeElement !== dismissButtonRef.current
+      ) {
+        returnFocusRef.current = activeElement;
       }
 
       setMessage(nextMessage);
@@ -99,6 +120,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
           <span>{message}</span>
 
           <button
+            ref={dismissButtonRef}
             type="button"
             onClick={dismissToast}
             aria-label="Dismiss notification"

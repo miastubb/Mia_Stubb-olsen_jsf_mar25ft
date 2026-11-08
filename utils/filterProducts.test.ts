@@ -3,9 +3,21 @@ import { filterProducts } from "./filterProducts";
 import type { Product } from "@/types/product";
 
 const products = [
-  { id: "1", title: "Gold headphones" },
-  { id: "2", title: "Black headphones" },
-  { id: "3", title: "Vanilla Perfume" },
+  {
+    id: "1",
+    title: "Gold headphones",
+    tags: ["electronics", "audio"],
+  },
+  {
+    id: "2",
+    title: "Black headphones",
+    tags: ["electronics", "audio"],
+  },
+  {
+    id: "3",
+    title: "Vanilla Perfume",
+    tags: ["beauty", "fragrance"],
+  },
 ] as Product[];
 
 describe("filterProducts", () => {
@@ -30,5 +42,9 @@ describe("filterProducts", () => {
 
   it("returns an empty array when nothing matches", () => {
     expect(filterProducts(products, "laptop")).toEqual([]);
+  });
+
+  it("matches products by tags", () => {
+    expect(filterProducts(products, "BEAUTY")).toEqual([products[2]]);
   });
 });

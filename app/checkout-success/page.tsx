@@ -1,5 +1,15 @@
 import Link from "next/link";
 import { IoCheckmarkCircleOutline } from "react-icons/io5";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Order Confirmation",
+  description: "Confirmation of your completed demo order at Next Store.",
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export default function CheckoutSuccessPage() {
   return (

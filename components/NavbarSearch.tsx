@@ -1,14 +1,24 @@
-"use client";
-import Link from "next/link";
 
-import { useEffect, useRef, useState } from "react";
+"use client";
+
+import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import Image from "next/image";
 import type { Product } from "@/types/product";
 import { filterProducts } from "@/utils/filterProducts";
-import Image from "next/image";
 import { formatCurrency } from "@/utils/formatCurrency";
 
-export default function NavbarSearch() {
+interface NavbarSearchProps {
+  onNavigate: () => void;
+}
+
+export default function NavbarSearch({
+  onNavigate,
+}: NavbarSearchProps) {
+  const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
+
   const [query, setQuery] = useState("");
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -52,11 +62,27 @@ export default function NavbarSearch() {
     return () => controller.abort();
   }, []);
 
-  const filteredProducts = filterProducts(products, query);
+  const searchTerm = query.trim();
+  const filteredProducts = filterProducts(products, searchTerm);
   const suggestions = filteredProducts.slice(0, 5);
 
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    if (!searchTerm) return;
+
+    router.push(`/search?q=${encodeURIComponent(searchTerm)}`);
+    onNavigate();
+  }
+
   return (
-    <div className="space-y-3">
+    <form
+      role="search"
+      action="/search"
+      method="get"
+      onSubmit={handleSubmit}
+      className="space-y-3"
+    >
       <label htmlFor="navbar-search" className="sr-only">
         Search products
       </label>
@@ -64,6 +90,7 @@ export default function NavbarSearch() {
       <input
         ref={inputRef}
         id="navbar-search"
+        name="q"
         type="search"
         value={query}
         onChange={(event) => setQuery(event.target.value)}
@@ -84,10 +111,11 @@ export default function NavbarSearch() {
         </p>
       )}
 
-      {!isLoading && !error && query.trim() !== "" && (
+      {!isLoading && !error && searchTerm && (
         <div className="space-y-3">
           <p role="status" className="text-sm text-zinc-300">
-            {filteredProducts.length} products found
+            {filteredProducts.length}{" "}
+            {filteredProducts.length === 1 ? "product" : "products"} found
           </p>
 
           {suggestions.length > 0 ? (
@@ -96,6 +124,7 @@ export default function NavbarSearch() {
                 <li key={product.id}>
                   <Link
                     href={`/products/${product.id}`}
+                    onClick={onNavigate}
                     className="flex items-center gap-4 rounded-md px-3 py-3 transition-colors hover:bg-zinc-800 focus-visible:outline-2 focus-visible:outline-white"
                   >
                     <Image
@@ -124,10 +153,25 @@ export default function NavbarSearch() {
               ))}
             </ul>
           ) : (
-            <p className="text-sm text-zinc-400">No matching products found.</p>
+            <p className="text-sm text-zinc-400">
+              No matching products found.
+            </p>
           )}
         </div>
       )}
-    </div>
+
+      {searchTerm && (
+        <button
+          type="submit"
+          className="w-full cursor-pointer rounded-md bg-teal-800 px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-teal-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+        >
+          {!isLoading && !error && filteredProducts.length > 0
+            ? `View all ${filteredProducts.length} ${
+                filteredProducts.length === 1 ? "result" : "results"
+              }`
+            : "View search results"}
+        </button>
+      )}
+    </form>
   );
 }

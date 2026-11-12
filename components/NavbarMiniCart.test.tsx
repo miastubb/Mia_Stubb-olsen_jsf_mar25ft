@@ -7,8 +7,10 @@ import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import type { CartItem } from "@/types/cart";
 import { useCart } from "@/context/CartContext";
 import { NavbarMiniCart } from "@/components/NavbarMiniCart";
+import { useToast } from "@/context/ToastContext";
 
 vi.mock("@/context/CartContext", () => ({ useCart: vi.fn() }));
+vi.mock("@/context/ToastContext", () => ({ useToast: vi.fn() }));
 vi.mock("next/image", () => ({ default: () => null }));
 
 const testItem: CartItem = {
@@ -27,6 +29,7 @@ const testItem: CartItem = {
 function renderMiniCart(quantity = 2) {
   const updateQuantity = vi.fn();
   const removeFromCart = vi.fn();
+  const showToast = vi.fn();
 
   vi.mocked(useCart).mockReturnValue({
     items: [{ ...testItem, quantity }],
@@ -36,8 +39,10 @@ function renderMiniCart(quantity = 2) {
     clearCart: vi.fn(),
   });
 
+  vi.mocked(useToast).mockReturnValue({ showToast });
+
   render(<NavbarMiniCart isOpen onOpenChange={vi.fn()} />);
-  return { updateQuantity, removeFromCart };
+  return { updateQuantity, removeFromCart, showToast };
 }
 
 afterEach(() => {
@@ -78,8 +83,8 @@ describe("NavbarMiniCart", () => {
     ).toBe(true);
   });
 
-  it("removes the product and moves focus to the cart close button", () => {
-    const { removeFromCart } = renderMiniCart();
+  it("removes the product, restores focus and shows a toast", () => {
+    const { removeFromCart, showToast } = renderMiniCart();
     fireEvent.click(
       screen.getByRole("button", { name: "Remove Test product from cart" }),
     );
@@ -88,5 +93,7 @@ describe("NavbarMiniCart", () => {
     expect(document.activeElement).toBe(
       screen.getByRole("button", { name: "Close cart preview" }),
     );
+    expect(showToast).toHaveBeenCalledOnce();
+    expect(showToast).toHaveBeenCalledWith("Removed from cart");
   });
 });

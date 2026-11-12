@@ -18,6 +18,7 @@ import {
   calculateCartTotals,
   calculateLineTotal,
 } from "@/utils/cartCalculations";
+import { useToast } from "@/context/ToastContext";
 
 interface NavbarMiniCartProps {
   isOpen: boolean;
@@ -26,6 +27,7 @@ interface NavbarMiniCartProps {
 
 export function NavbarMiniCart({ isOpen, onOpenChange }: NavbarMiniCartProps) {
   const { items, updateQuantity, removeFromCart } = useCart();
+  const { showToast } = useToast();
 
   const panelId = useId();
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -203,6 +205,7 @@ export function NavbarMiniCart({ isOpen, onOpenChange }: NavbarMiniCartProps) {
                           onClick={() => {
                             removeFromCart(item.id);
                             closeRef.current?.focus();
+                            showToast("Removed from cart");
                           }}
                           className="ml-auto flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-md text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-800"
                         >

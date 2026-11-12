@@ -1,3 +1,4 @@
+import type { ProductSort } from "@/utils/productSort";
 import type { Product, PaginatedProducts } from "@/types/product";
 
 const API_URL = "https://v2.api.noroff.dev/online-shop";
@@ -108,11 +109,17 @@ export class ProductNotFoundError extends Error {
 export async function getProducts(
   page: number = 1,
   limit: number = 12,
+  sort: ProductSort = "default",
 ): Promise<PaginatedProducts> {
   const url = new URL(API_URL);
 
   url.searchParams.set("page", String(page));
   url.searchParams.set("limit", String(limit));
+
+  if (sort !== "default") {
+    url.searchParams.set("sort", "discountedPrice");
+    url.searchParams.set("sortOrder", sort === "price-asc" ? "asc" : "desc");
+  }
 
   const response = await fetchProductResponse(url.toString());
 

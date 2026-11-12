@@ -5,22 +5,29 @@ import Pagination from "@/components/Pagination";
 import { notFound } from "next/navigation";
 import { ProductsNotFoundError } from "@/services/products";
 import HomeHero from "@/components/HomeHero";
+import { parseProductSort } from "@/utils/productSort";
+import ProductSort from "@/components/ProductSort";
 
 interface HomePageProps {
-  searchParams: Promise<{ page?: string }>;
+  searchParams: Promise<{
+    page?: string | string[];
+    sort?: string | string[];
+  }>;
 }
 
 async function Products({ searchParams }: HomePageProps) {
-  const { page } = await searchParams;
+  const { page, sort } = await searchParams;
 
-  const parsedPage = Number(page ?? 1);
+  const selectedSort = parseProductSort(sort);
+
+  const parsedPage = typeof page === "string" ? Number(page) : 1;
   const currentPage =
     Number.isSafeInteger(parsedPage) && parsedPage > 0 ? parsedPage : 1;
 
   let result;
 
   try {
-    result = await getProducts(currentPage);
+    result = await getProducts(currentPage, 12, selectedSort);
   } catch (error) {
     if (error instanceof ProductsNotFoundError) {
       notFound();
@@ -33,8 +40,9 @@ async function Products({ searchParams }: HomePageProps) {
 
   return (
     <>
+      <ProductSort sort={selectedSort} />
       <ProductGrid products={products} />
-      <Pagination meta={meta} />
+      <Pagination meta={meta} sort={selectedSort} />
     </>
   );
 }

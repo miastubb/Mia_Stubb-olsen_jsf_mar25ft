@@ -220,4 +220,32 @@ describe("getProducts", () => {
       );
     });
   });
+  describe("product price sorting", () => {
+    it.each([
+      ["price-asc", "asc"],
+      ["price-desc", "desc"],
+    ] as const)(
+      "requests %s while preserving page and limit",
+      async (sort, expectedOrder) => {
+        const fetchMock = vi.fn().mockResolvedValue({
+          ok: true,
+          status: 200,
+          json: async () => validResponse,
+        });
+
+        vi.stubGlobal("fetch", fetchMock);
+
+        await getProducts(2, 12, sort);
+
+        expect(fetchMock).toHaveBeenCalledOnce();
+
+        const requestUrl = new URL(fetchMock.mock.calls[0][0]);
+
+        expect(requestUrl.searchParams.get("page")).toBe("2");
+        expect(requestUrl.searchParams.get("limit")).toBe("12");
+        expect(requestUrl.searchParams.get("sort")).toBe("discountedPrice");
+        expect(requestUrl.searchParams.get("sortOrder")).toBe(expectedOrder);
+      },
+    );
+  });
 });

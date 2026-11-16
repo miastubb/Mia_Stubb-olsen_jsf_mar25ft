@@ -10,7 +10,7 @@ export default function ProductRating({
   className = "",
 }: ProductRatingProps) {
   if (reviewCount === 0) {
-    return null;
+    return <p className={`text-sm ${className}`}>No ratings yet</p>;
   }
 
   return (

@@ -49,7 +49,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           </p>
 
           {hasDiscount && (
-            <p className="text-sm text-black line-through">
+            <p className="text-sm text-zinc-300 line-through">
               {formatCurrency(product.price)}
             </p>
           )}

@@ -86,7 +86,7 @@ export default function ContactPage() {
         Contact us
       </h1>
 
-      <p className="mb-6 text-zinc-700">
+      <p className="mb-6 text-black">
         Have a question? Fill in the form below. All fields are required.
       </p>
 

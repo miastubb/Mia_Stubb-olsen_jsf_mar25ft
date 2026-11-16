@@ -29,13 +29,13 @@ export default function Pagination({
         {!isFirstPage && (
           <Link
             href={getPageHref(currentPage - 1)}
-            className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-900 transition-colors hover:bg-gray-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+            className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-black transition-colors hover:bg-gray-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
           >
             Previous
           </Link>
         )}
 
-        <span className="text-sm font-medium text-gray-700">
+        <span className="text-sm font-medium text-black">
           Page {currentPage} of {pageCount}
         </span>
 

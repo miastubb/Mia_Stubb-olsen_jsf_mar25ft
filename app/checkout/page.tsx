@@ -29,6 +29,8 @@ export default function CheckoutPage() {
   const inputClasses =
     "mt-2 w-full rounded-lg border border-zinc-300 bg-white px-4 py-3 text-zinc-950 placeholder:text-zinc-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#667D70]";
 
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
   if (isSubmitting) {
     return (
       <div className="mx-auto w-full max-w-2xl">
@@ -71,7 +73,12 @@ export default function CheckoutPage() {
 
     try {
       sessionStorage.setItem("nextstore-demo-checkout", "completed");
-    } catch {}
+    } catch {
+      setSubmitError(
+        "We could not save your order confirmation. Please allow browser storage and try again. Your cart has been kept.",
+      );
+      return;
+    }
 
     setIsSubmitting(true);
     clearCart();
@@ -309,6 +316,11 @@ export default function CheckoutPage() {
               </div>
             </div>
           </div>
+          {submitError && (
+            <p role="alert" className="mt-6 text-red-800">
+              {submitError}
+            </p>
+          )}
           <button
             type="submit"
             disabled={items.length === 0}
